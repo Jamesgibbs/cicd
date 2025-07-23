@@ -64,6 +64,11 @@ jobs:
           key: ${{ secrets.SSH_KEY }}       # your private key
           script: |
             cd /var/www
+            if [ ! -d ".git" ]; then
+              git clone https://github.com/Jamesgibbs/cicd.git .
+            else
+              git pull origin main
+            fi
             docker compose -f docker-compose.prod.yml pull
             docker compose -f docker-compose.prod.yml up -d
             docker compose -f docker-compose.prod.yml exec app php artisan migrate --force
