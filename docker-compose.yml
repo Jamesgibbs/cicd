@@ -1,0 +1,29 @@
+services:
+    app:
+        build: .
+        image: ghcr.io/Jamesgibbs/laravel-app:dev
+        container_name: laravel_app
+        ports:
+            - 8000:80
+        volumes:
+            - ./:/var/www
+        environment:
+            APP_ENV: local
+            DB_HOST: db
+            DB_DATABASE: ${DB_DATABASE}
+            DB_USERNAME: ${DB_USERNAME}
+            DB_PASSWORD: ${DB_PASSWORD}
+
+    db:
+        image: mysql:8.0
+        container_name: laravel_db
+        environment:
+            MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+            MYSQL_DATABASE: ${DB_DATABASE}
+            MYSQL_USER: ${DB_USERNAME}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
+        volumes:
+            - db_data:/var/lib/mysql
+
+volumes:
+    db_data:
