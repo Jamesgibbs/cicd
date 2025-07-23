@@ -1,9 +1,63 @@
-name: workflow.yml
+name: CI / CD
+
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches:
+      - main
+
+permissions:
+  contents: read    # for checkout
+  packages: write   # to push to GHCR
+  id-token: write   # if you use OIDC for Docker login
 
 jobs:
-    deploy:
+  build-and-publish:
+    name: Build & Publish Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up QEMU (for cross-platform builds)
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        id: buildx
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: Dockerfile
+          builder: ${{ steps.buildx.outputs.name }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ghcr.io/jamesgibbs/laravel-app:prod
+
+  deploy:
+    name: Deploy to Production
+    needs: build-and-publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          port: ${{ secrets.SERVER_SSH_PORT }}     # default is 22
+          key: ${{ secrets.SERVER_SSH_KEY }}       # your private key
+          script: |
+            cd /path/to/your/project
+            docker-compose pull         # pull latest app image
+            docker-compose up -d        # recreate containers
+            docker-compose exec app php artisan migrate --force
