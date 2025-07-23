@@ -55,7 +55,7 @@ jobs:
           host: ${{ secrets.HOST_IP }}
           username: ${{ secrets.SERVER_USER }}
           port: ${{ secrets.SERVER_SSH_PORT }}     # default is 22
-          key: ${{ secrets.SERVER_SSH_KEY }}       # your private key
+          key: ${{ secrets.SSH_KEY }}       # your private key
           script: |
             cd /path/to/your/project
             docker-compose pull         # pull latest app image
