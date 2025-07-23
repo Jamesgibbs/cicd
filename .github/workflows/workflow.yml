@@ -52,7 +52,7 @@ jobs:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.SERVER_HOST }}
+          host: ${{ secrets.HOST_IP }}
           username: ${{ secrets.SERVER_USER }}
           port: ${{ secrets.SERVER_SSH_PORT }}     # default is 22
           key: ${{ secrets.SERVER_SSH_KEY }}       # your private key
