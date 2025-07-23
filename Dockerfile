@@ -2,11 +2,9 @@
 FROM composer:2 AS build
 
 WORKDIR /app
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader
-
 COPY . .
-RUN php artisan config:cache \
+RUN composer install --no-dev --optimize-autoloader \
+ && php artisan config:cache \
  && php artisan route:cache \
  && php artisan view:cache
 
