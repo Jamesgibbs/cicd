@@ -23,11 +23,6 @@ RUN composer install --no-dev --optimize-autoloader
 # Pull in compiled assets
 COPY --from=assets /app/public /app/public
 
-# Cache Laravel bootstraps
-RUN php artisan config:cache \
- && php artisan route:cache \
- && php artisan view:cache
-
 # Stage 2: Runtime
 FROM php:8.3-fpm-alpine
 
@@ -49,6 +44,10 @@ RUN apk add --no-cache \
 # Permissions
 RUN chown -R www-data:www-data /var/www
 
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint
+RUN chmod +x /usr/local/bin/docker-entrypoint
+
 EXPOSE 9000
+ENTRYPOINT ["docker-entrypoint"]
 CMD ["php-fpm"]
 
