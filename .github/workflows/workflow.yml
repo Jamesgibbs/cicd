@@ -49,11 +49,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Install Docker Compose
-        run: |
-          sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-          docker-compose --version
+#      - name: Install Docker Compose
+#        run: |
+#          sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+#          sudo chmod +x /usr/local/bin/docker-compose
+#          docker-compose --version
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@master
@@ -63,7 +63,7 @@ jobs:
           port: ${{ secrets.SERVER_SSH_PORT }}     # default is 22
           key: ${{ secrets.SSH_KEY }}       # your private key
           script: |
-            cd /path/to/your/project
-            docker-compose -f docker-compose.prod.yml pull         # pull latest app image
-            docker-compose -f docker-compose.prod.yml up -d        # recreate containers
-            docker-compose -f docker-compose.prod.yml exec app php artisan migrate --force
+            cd /var/www
+            docker compose -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.prod.yml up -d
+            docker compose -f docker-compose.prod.yml exec app php artisan migrate --force
