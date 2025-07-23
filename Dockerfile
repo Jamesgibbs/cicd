@@ -16,12 +16,9 @@ FROM composer:2 AS build
 
 WORKDIR /app
 
-# PHP deps caching trick
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader
-
-# Copy app code
 COPY . .
+# PHP deps caching trick
+RUN composer install --no-dev --optimize-autoloader
 
 # Pull in compiled assets
 COPY --from=assets /app/public /app/public
