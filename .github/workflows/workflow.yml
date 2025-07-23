@@ -54,6 +54,7 @@ jobs:
           sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
           docker-compose --version
+
       - name: Deploy via SSH
         uses: appleboy/ssh-action@master
         with:
@@ -63,6 +64,6 @@ jobs:
           key: ${{ secrets.SSH_KEY }}       # your private key
           script: |
             cd /path/to/your/project
-            docker-compose pull         # pull latest app image
-            docker-compose up -d        # recreate containers
-            docker-compose exec app php artisan migrate --force
+            docker-compose -f docker-compose.prod.yml pull         # pull latest app image
+            docker-compose -f docker-compose.prod.yml up -d        # recreate containers
+            docker-compose -f docker-compose.prod.yml exec app php artisan migrate --force
